@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}VoctoImport / {{ conference.title }}{% endblock %}
+{% block navtitle %}<a href="/" class="text-white">VoctoImport</a> / <a href="/conference/{{ conference.slug }}" class="text-white">{{ conference.title }}</a>{% endblock %}
+{% block navitems %}
+<a class="p-2 text-white" href="/schedule/{{ conference.slug }}.json">schedule.json</a>
+<a class="p-2 text-white" href="/schedule/{{ conference.slug }}.xml">schedule.xml</a>
+<a class="p-2 text-white" href="/schedule/{{ conference.slug }}.xml?showall=yes">schedule.xml with unpublished talks</a>
+{% endblock %}
+{% block container %}
+    <div class="content">
+        <div class="page-header">
+            <h1>{{ conference.title }}</h1>
+        </div>
+        <div class="list-group">
+            {% for event in events %}
+            <a class="list-group-item" href="/conference/{{ conference.slug }}/{{ event.guid }}">{{ event.date|date:"Y-m-d H:i" }} {{ event.title }} {% if not event.videofile %} <span style="color:red;font-weight:bold;float:right;">Missing video</span>{% endif %}{% if event.published %} <span style="color:green;font-weight:bold;float:right;">Imported</span>{% endif %}</a>
+            {% endfor %}
+        </div>
+        <br/>
+        <div class="row">
+          <div class="col-3">
+            <a href="/conference/{{ conference.slug }}/new" class="w-100 btn-primary btn btn-lg">New talk</a>
+          </div>
+          {% if user.is_superuser %}
+          <div class="col-3">
+            <a href="/admin/event/conference/{{ conference.id }}" class="w-100 btn-warning btn btn-lg">Edit conference</a>
+          </div>
+          {% endif %}
+        </div>
+    </div>
+{% endblock %}

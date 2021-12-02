@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+{% block title %}VoctoImport / {{ conference.title }}{% endblock %}
+{% block navtitle %}<a href="/" class="text-white">VoctoImport</a> / <a href="/conference/{{ conference.slug }}" class="text-white">{{ conference.title }}</a>{% endblock %}
+{% block navitems %}
+<a class="p-2 text-white" href="/schedule/{{ conference.slug }}.json">schedule.json</a>
+<a class="p-2 text-white" href="/schedule/{{ conference.slug }}.xml">schedule.xml</a>
+{% endblock %}
+{% block container %}
+    <div class="content">
+        <div class="page-header">
+            <h1>{{ conference.title }}</h1>
+        </div>
+
+        <form method="post" enctype="multipart/form-data">
+          {% if form.errors %}
+          {{ form.errors }}
+          {% endif %}
+          {% csrf_token %}
+
+          <div class="row g-3">
+            <div class="col-2">
+              <label for="{{ form.language.id_for_label }}" class="form-label">Language<span style='color:red'>*</span></label>
+              {% if readonly %}
+              <input class="form-control" id="{{ form.language.id_for_label }}" name="{{ form.language.html_name }}" readonly required value="{% for k,v in form.fields.language.choices %}{% if form.language.value == k %}{{ v }}{% endif %}{% endfor %}" />
+              {% else %}
+              <select class="form-select" id="{{ form.language.id_for_label }}" name="{{ form.language.html_name }}" required>
+              {% for k,v in form.fields.language.choices %}
+                <option value="{{ k }}" {% if form.language.value == k %}selected{% endif %}>{{ v }}</option>
+              {{ k }} {{ v }}
+              {% endfor %}
+              </select>
+              {% endif %}
+              {% if form.language.errors %}<div class="invalid-feedback" style="display:block">{{ form.language.errors|join:'<br />' }}</div>{% endif %}
+            </div>
+            <div class="col-9">
+              <label for="{{ form.title.id_for_label }}" class="form-label">Title<span style='color:red'>*</span></label>
+              <input {% if readonly %}readonly{% endif %} type="text" class="form-control" name="{{ form.title.html_name }}" id="{{ form.title.id_for_label }}" placeholder="{% if not readonly %}My cool talk{% endif %}" value="{% if form.title.value %}{{ form.title.value }}{% endif %}" required>
+              {% if form.title.errors %}<div class="invalid-feedback" style="display:block">{{ form.title.errors|join:'<br />' }}</div>{% endif %}
+            </div>
+
+            <div class="col-sm-4">
+              <label for="{{ form.date_date.id_for_label }}" class="form-label">Date<span style='color:red'>*</span></label>
+              <input {% if readonly %}readonly{% endif %} type="text" class="form-control" name="{{ form.date_date.html_name }}" id="{{ form.date_date.id_for_label }}" placeholder="{% if not readonly %}YYYY-MM-DD{% endif %}" value="{% if form.date_date.value %}{{ form.date_date.value }}{% endif %}" required>
+              {% if form.date_date.errors %}<div class="invalid-feedback" style="display:block">{{ form.date_date.errors|join:'<br />' }}</div>{% endif %}
+            </div>
+            <div class="col-sm-4">
+              <label for="{{ form.date_time.id_for_label }}" class="form-label">Time<span style='color:red'>*</span> (may be interpreted Europe/Berlin, who knows...)</label>
+              <input {% if readonly %}readonly{% endif %} type="text" class="form-control" name="{{ form.date_time.html_name }}" id="{{ form.date_time.id_for_label }}" placeholder="{% if not readonly %}hh:mm{% endif %}" value="{% if form.date_time.value %}{{ form.date_time.value }}{% endif %}" required>
+              {% if form.date_time.errors %}<div class="invalid-feedback" style="display:block">{{ form.date_time.errors|join:'<br />' }}</div>{% endif %}
+            </div>
+            <div class="col-sm-4">
+              <label for="{{ form.duration.id_for_label }}" class="form-label">Duration<span style='color:red'>*</span></label>
+              <input {% if readonly %}readonly{% endif %} type="text" class="form-control" name="{{ form.duration.html_name }}" id="{{ form.duration.id_for_label }}" placeholder="{% if not readonly %}hh:mm{% endif %}" value="{% if form.duration.value %}{{ form.duration.value }}{% endif %}" required>
+              {% if form.duration.errors %}<div class="invalid-feedback" style="display:block">{{ form.duration.errors|join:'<br />' }}</div>{% endif %}
+            </div>
+
+            <div class="col-12">
+              <label for="{{ form.persons.id_for_label }}" class="form-label">Persons<span style='color:red'>*</span></label>
+              <textarea {% if readonly %}readonly{% endif %} rows=4 type="text" class="form-control" name="{{ form.persons.html_name }}" id="{{ form.persons.id_for_label }}" placeholder="{% if not readonly %}First Person&#10;Second Person{% endif %}" required>{% if form.persons.value %}{{ form.persons.value }}{% endif %}</textarea>
+              {% if form.persons.errors %}<div class="invalid-feedback" style="display:block">{{ form.persons.errors|join:'<br />' }}</div>{% endif %}
+            </div>
+
+            <div class="col-12">
+              <label for="{{ form.abstract.id_for_label }}" class="form-label">Abstract</label>
+              <textarea {% if readonly %}readonly{% endif %} rows=4 type="text" class="form-control" name="{{ form.abstract.html_name }}" id="{{ form.abstract.id_for_label }}" placeholder="{% if not readonly %}Cool talks are getting harder to find, but this talk will blow your mind.{% endif %}">{% if form.abstract.value %}{{ form.abstract.value }}{% endif %}</textarea>
+              {% if form.abstract.errors %}<div class="invalid-feedback" style="display:block">{{ form.abstract.errors|join:'<br />' }}</div>{% endif %}
+            </div>
+
+            <div class="col-12">
+              <label for="{{ form.description.id_for_label }}" class="form-label">Description</label>
+              <textarea {% if readonly %}readonly{% endif %} rows=4 type="text" class="form-control" name="{{ form.description.html_name }}" id="{{ form.description.id_for_label }}" placeholder="{% if not readonly %}Lorem ipsum.. you know the drill.{% endif %}">{% if form.description.value %}{{ form.description.value }}{% endif %}</textarea>
+              {% if form.description.errors %}<div class="invalid-feedback" style="display:block">{{ form.description.errors|join:'<br />' }}</div>{% endif %}
+            </div>
+
+            <div class="col-2">
+              <label for="{{ form.room.id_for_label }}" class="form-label">Room</label>
+              <input {% if readonly %}readonly{% endif %} type="text" class="form-control" name="{{ form.room.html_name }}" id="{{ form.room.id_for_label }}" placeholder="{% if not readonly %}HS1{% endif %}" value="{% if form.room.value %}{{ form.room.value }}{% endif %}">
+              {% if form.room.errors %}<div class="invalid-feedback" style="display:block">{{ form.room.errors|join:'<br />' }}</div>{% endif %}
+            </div>
+            <div class="col-2">
+              <label for="{{ form.track.id_for_label }}" class="form-label">Track</label>
+              <input {% if readonly %}readonly{% endif %} type="text" class="form-control" name="{{ form.track.html_name }}" id="{{ form.track.id_for_label }}" placeholder="{% if not readonly %}Hacking{% endif %}" value="{% if form.track.value %}{{ form.track.value }}{% endif %}">
+              {% if form.track.errors %}<div class="invalid-feedback" style="display:block">{{ form.track.errors|join:'<br />' }}</div>{% endif %}
+            </div>
+            <div class="col-8">
+              <label for="{{ form.url.id_for_label }}" class="form-label">URL</label>
+              <input {% if readonly %}readonly{% endif %} type="text" class="form-control" name="{{ form.url.html_name }}" id="{{ form.url.id_for_label }}" placeholder="{% if not readonly %}https://example.org/project/info/whatever{% endif %}" value="{% if form.url.value %}{{ form.url.value }}{% endif %}">
+              {% if form.url.errors %}<div class="invalid-feedback" style="display:block">{{ form.url.errors|join:'<br />' }}</div>{% endif %}
+            </div>
+
+            <div class="col-12">
+              <label for="{{ form.videofile.id_for_label }}" class="form-label">Video</label>
+              {% if not readonly %}
+              <input type="file" class="form-control" name="{{ form.videofile.html_name }}" id="{{ form.videofile.id_for_label }}" placeholder="Upload file">
+              {% endif %}
+              {% if not form.new and form.videofile.value %}
+              <br/><a href="https://import.c3voc.de/{{ form.videofile.value }}">https://import.c3voc.de/{{ form.videofile.value }}</a>
+              {% endif %}
+              {% if form.videofile.errors %}<div class="invalid-feedback" style="display:block">{{ form.videofile.errors|join:'<br />' }}</div>{% endif %}
+            </div>
+          </div>
+          <hr class="my-4">
+
+          {% if not readonly %}
+          <div class="row">
+            <div class="col-{% if form.new or not form.videofile.value %}12{% else %}6{% endif %}">
+              <button class="w-100 btn btn-primary btn-lg" name="save" type="submit">Save</button>
+            </div>
+            {% if not form.new and form.videofile.value %}
+            <div class="col-6">
+              <button class="w-100 btn btn-warning btn-green btn-lg" name="submit" type="submit">Submit to Tracker</button>
+            </div>
+            {% endif %}
+          </div>
+          {% endif %}
+        </form>
+        {% if user.is_superuser and not form.new %}
+        <br/>
+        <a href="/admin/event/event/{{ form.instance.guid }}">Edit in admin menu</a>
+        {% endif %}
+    </div>
+{% endblock %}

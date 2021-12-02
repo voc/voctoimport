@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block container %}
+    <div class="content">
+        <div class="page-header">
+            <h1>Conferences</h1>
+        </div>
+        <div class="list-group">
+            {% for conference in conferences %}
+            <a class="list-group-item" href="/conference/{{ conference.slug }}">{{ conference.title }}</a>
+            {% endfor %}
+        </div>
+        {% if user.is_superuser %}
+        <br/>
+        <div class="row">
+          <div class="col-3">
+            <a href="/admin/event/conference/" class="w-100 btn-warning btn">Manage conferences</a>
+          </div>
+        </div>
+        {% endif %}
+    </div>
+{% endblock %}
