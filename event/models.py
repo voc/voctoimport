@@ -138,6 +138,7 @@ class Event(models.Model):
         path = "videos/%s.%s" % (uuid.uuid4(), ext)
         return path
     videofile = models.FileField(max_length=1000, upload_to=upload_path, blank=True)
+    remotevideofile = models.URLField(max_length=200, blank=True)
 
     def __str__(self):
         return "%d: %s" % (self.talkid, self.title)
