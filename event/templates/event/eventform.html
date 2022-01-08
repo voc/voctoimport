@@ -44,7 +44,7 @@
               {% if form.date_date.errors %}<div class="invalid-feedback" style="display:block">{{ form.date_date.errors|join:'<br />' }}</div>{% endif %}
             </div>
             <div class="col-sm-4">
-              <label for="{{ form.date_time.id_for_label }}" class="form-label">Time<span style='color:red'>*</span> (may be interpreted Europe/Berlin, who knows...)</label>
+              <label for="{{ form.date_time.id_for_label }}" class="form-label">Time<span style='color:red'>*</span> (Europe/Berlin, hopefully...)</label>
               <input {% if readonly %}readonly{% endif %} type="text" class="form-control" name="{{ form.date_time.html_name }}" id="{{ form.date_time.id_for_label }}" placeholder="{% if not readonly %}hh:mm{% endif %}" value="{% if form.date_time.value %}{{ form.date_time.value }}{% endif %}" required>
               {% if form.date_time.errors %}<div class="invalid-feedback" style="display:block">{{ form.date_time.errors|join:'<br />' }}</div>{% endif %}
             </div>
@@ -88,6 +88,12 @@
               {% if form.url.errors %}<div class="invalid-feedback" style="display:block">{{ form.url.errors|join:'<br />' }}</div>{% endif %}
             </div>
 
+            {% if readonly %}
+            <div class="col-12">
+              <h2>Video</h2>
+              <a href="{{ form.video_url }}">{{ form.video_url }}</a>
+            </div>
+            {% else %}
             <div class="col-12">
               <h2>Video</h2>
               Please <b>either</b> upload a video file, or enter a URL where the video can be downloaded <b>directly</b> (with e.g. wget).<br />
@@ -96,14 +102,12 @@
 
             <div class="col-12" id="div_remotevideofile">
               <label for="{{ form.remotevideofile.id_for_label }}" class="form-label">Video URL</label>
-              <input {% if readonly %}readonly{% endif %} onkeydown="update_hide_fields();" onkeyup="update_hide_fields();" onchange="update_hide_fields();" type="text" class="form-control" name="{{ form.remotevideofile.html_name }}" id="{{ form.remotevideofile.id_for_label }}" placeholder="{% if not readonly %}https://example.org/project/info/whatever{% endif %}" value="{% if form.remotevideofile.value %}{{ form.remotevideofile.value }}{% endif %}">
+              <input onkeydown="update_hide_fields();" onkeyup="update_hide_fields();" onchange="update_hide_fields();" type="text" class="form-control" name="{{ form.remotevideofile.html_name }}" id="{{ form.remotevideofile.id_for_label }}" placeholder="{% if not readonly %}https://example.org/project/info/whatever{% endif %}" value="{% if form.remotevideofile.value %}{{ form.remotevideofile.value }}{% endif %}">
               {% if form.remotevideofile.errors %}<div class="invalid-feedback" style="display:block">{{ form.remotevideofile.errors|join:'<br />' }}</div>{% endif %}
             </div>
             <div class="col-12" id="div_videofile">
               <label for="{{ form.videofile.id_for_label }}" class="form-label">Video File</label>
-              {% if not readonly %}
               <input type="file" class="form-control" onchange="update_hide_fields();" name="{{ form.videofile.html_name }}" id="{{ form.videofile.id_for_label }}" placeholder="Upload file">
-              {% endif %}
               {% if not form.new and form.videofile.value %}
               <br/><a href="https://import.c3voc.de/{{ form.videofile.value }}">https://import.c3voc.de/{{ form.videofile.value }}</a>
               {% endif %}
@@ -112,7 +116,6 @@
           </div>
           <hr class="my-4">
 
-          {% if not readonly %}
           <div class="row">
             <div class="col-{% if form.new or not form.video_url %}12{% else %}6{% endif %}">
               <button class="w-100 btn btn-primary btn-lg" name="save" type="submit">Save</button>
