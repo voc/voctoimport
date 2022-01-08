@@ -9,6 +9,14 @@ import datetime
 LANGUAGES = {
     'en': 'Englisch',
     'de': 'Deutsch',
+    'de-en': 'Deutsch (+Englisch)',
+    'en-de': 'Englisch (+Deutsch)',
+    'de-en-fr': 'Deutsch (+Englisch, +Französisch)',
+    'de-en-it': 'Deutsch (+Englisch, +Italienisch)',
+    'en-de-it': 'Englisch (+Deutsch, +Italienisch)',
+    'en-de-fr': 'Englisch (+Deutsch, +Französisch)',
+    'de-en-es': 'Deutsch (+Englisch, +Spanisch)',
+    'en-de-es': 'Englisch (+Deutsch, +Spanisch)',
 }
 
 IMPORT_TOOL_TRACKER_PROJECT_ID = 362
@@ -45,7 +53,7 @@ class Event(models.Model):
     abstract = models.TextField(blank=True)
     description = models.TextField(blank=True)
     date = models.DateTimeField()
-    language = models.CharField(max_length=2, choices=LANGUAGES.items())
+    language = models.CharField(max_length=10, choices=LANGUAGES.items())
     persons = models.TextField()
 
     duration = models.CharField(max_length=5, default="01:00", blank=False, null=False)

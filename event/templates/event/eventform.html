@@ -19,7 +19,7 @@
 
           <div class="row g-3">
             <div class="col-2">
-              <label for="{{ form.language.id_for_label }}" class="form-label">Language<span style='color:red'>*</span></label>
+              <label for="{{ form.language.id_for_label }}" class="form-label">Language(s)<span style='color:red'>*</span></label>
               {% if readonly %}
               <input class="form-control" id="{{ form.language.id_for_label }}" name="{{ form.language.html_name }}" readonly required value="{% for k,v in form.fields.language.choices %}{% if form.language.value == k %}{{ v }}{% endif %}{% endfor %}" />
               {% else %}
