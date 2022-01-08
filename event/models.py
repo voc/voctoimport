@@ -38,8 +38,11 @@ class Conference(models.Model):
         return "%s (%s)" % (self.title, self.slug)
 
 def new_event_id():
-    lasttalk = Event.objects.order_by('-talkid').first()
-    return lasttalk.talkid + 1
+    lasttalks = Event.objects.order_by('-talkid')
+    if lasttalks.exists():
+        return lasttalks.first().talkid + 1
+    else:
+        return 1
 
 class Event(models.Model):
     guid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
