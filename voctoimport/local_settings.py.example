@@ -22,3 +22,18 @@ STATICFILES_DIRS = [
 
 MEDIA_URL = 'https://import.c3voc.de/uploads/'
 MEDIA_ROOT = "/var/lib/voctoimport/uploads"
+
+# Database
+# https://docs.djangoproject.com/en/3.1/ref/settings/#databases
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'voctoimport',
+        'USER': 'voctoimport',
+        'PASSWORD': 'superdupersecretpasswordthatneverwaspushedtopublicgit',
+        'HOST': 'localhost',
+        'PORT': '',
+    }
+}
+

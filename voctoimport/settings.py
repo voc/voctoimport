@@ -60,20 +60,6 @@ TEMPLATES = [
 WSGI_APPLICATION = 'voctoimport.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/3.1/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'voctoimport',
-        'USER': 'voctoimport',
-        'PASSWORD': 'neul9xoonaighiej5oejee4AeTh4kao9haeCei2puChaih9chu',
-        'HOST': 'localhost',
-        'PORT': '',
-    }
-}
-
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
 
