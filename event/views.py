@@ -45,7 +45,7 @@ def view_event(request, cslug, eguid):
             event = form.save(commit=False)
             event.date = parse_datetime('%sT%s:00' % (form.cleaned_data['date_date'], form.cleaned_data['date_time']))
             event.save()
-            if 'submit' in request.POST and event.videofile:
+            if 'submit' in request.POST and event.video_url():
                 event.publish()
             return redirect("/conference/%s" % (conference.slug))
     else:
@@ -89,7 +89,7 @@ def scheduledict(cslug, request):
     persons = []
     days = {}
     for dbevent in conference.event_set.order_by('date').all():
-        if not dbevent.videofile and request.GET.get("showall") != "yes":
+        if not dbevent.video_url() and request.GET.get("showall") != "yes":
             continue
         date = dbevent.date.astimezone(tz).strftime("%Y-%m-%d")
         if date not in days:
@@ -123,7 +123,7 @@ def scheduledict(cslug, request):
         event['abstract'] = dbevent.abstract
         event['description'] = dbevent.description
         event['persons'] = []
-        event['video_download_url'] = 'https://import.c3voc.de/%s' % dbevent.videofile # TODO: dynamic domain?
+        event['video_download_url'] = dbevent.video_url()
         for name in dbevent.persons.strip().splitlines():
             name = name.strip()
             if name not in persons:

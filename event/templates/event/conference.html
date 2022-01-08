@@ -13,7 +13,7 @@
         </div>
         <div class="list-group">
             {% for event in events %}
-            <a class="list-group-item" href="/conference/{{ conference.slug }}/{{ event.guid }}">{{ event.date|date:"Y-m-d H:i" }} {{ event.title }} {% if not event.videofile %} <span style="color:red;font-weight:bold;float:right;">Missing video</span>{% endif %}{% if event.published %} <span style="color:green;font-weight:bold;float:right;">Imported</span>{% endif %}</a>
+            <a class="list-group-item" href="/conference/{{ conference.slug }}/{{ event.guid }}">{{ event.date|date:"Y-m-d H:i" }} {{ event.title }} {% if not event.video_url %} <span style="color:red;font-weight:bold;float:right;">Missing video</span>{% endif %}{% if event.published %} <span style="color:green;font-weight:bold;float:right;">Imported</span>{% endif %}</a>
             {% endfor %}
         </div>
         <br/>

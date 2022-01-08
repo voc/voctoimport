@@ -89,9 +89,20 @@
             </div>
 
             <div class="col-12">
+              <h2>Video</h2>
+              Please <b>either</b> upload a video file, or enter a URL where the video can be downloaded <b>directly</b> (with e.g. wget).<br />
+              <span style="color:red">YouTube URLs or download sites which require a confirmation will not work!</span>
+            </div>
+
+            <div class="col-12" id="div_remotevideofile">
+              <label for="{{ form.remotevideofile.id_for_label }}" class="form-label">Video URL</label>
+              <input {% if readonly %}readonly{% endif %} onkeydown="update_hide_fields();" onkeyup="update_hide_fields();" onchange="update_hide_fields();" type="text" class="form-control" name="{{ form.remotevideofile.html_name }}" id="{{ form.remotevideofile.id_for_label }}" placeholder="{% if not readonly %}https://example.org/project/info/whatever{% endif %}" value="{% if form.remotevideofile.value %}{{ form.remotevideofile.value }}{% endif %}">
+              {% if form.remotevideofile.errors %}<div class="invalid-feedback" style="display:block">{{ form.remotevideofile.errors|join:'<br />' }}</div>{% endif %}
+            </div>
+            <div class="col-12" id="div_videofile">
               <label for="{{ form.videofile.id_for_label }}" class="form-label">Video</label>
               {% if not readonly %}
-              <input type="file" class="form-control" name="{{ form.videofile.html_name }}" id="{{ form.videofile.id_for_label }}" placeholder="Upload file">
+              <input type="file" class="form-control" onchange="update_hide_fields();" name="{{ form.videofile.html_name }}" id="{{ form.videofile.id_for_label }}" placeholder="Upload file">
               {% endif %}
               {% if not form.new and form.videofile.value %}
               <br/><a href="https://import.c3voc.de/{{ form.videofile.value }}">https://import.c3voc.de/{{ form.videofile.value }}</a>
@@ -103,10 +114,10 @@
 
           {% if not readonly %}
           <div class="row">
-            <div class="col-{% if form.new or not form.videofile.value %}12{% else %}6{% endif %}">
+            <div class="col-{% if form.new or not form.video_url %}12{% else %}6{% endif %}">
               <button class="w-100 btn btn-primary btn-lg" name="save" type="submit">Save</button>
             </div>
-            {% if not form.new and form.videofile.value %}
+            {% if not form.new and form.video_url %}
             <div class="col-6">
               <button class="w-100 btn btn-warning btn-green btn-lg" name="submit" type="submit">Submit to Tracker</button>
             </div>
@@ -119,4 +130,28 @@
         <a href="/admin/event/event/{{ form.instance.guid }}">Edit in admin menu</a>
         {% endif %}
     </div>
+
+<script type="text/javascript">
+function update_hide_fields() {
+  let input_remotevideofile = document.getElementById('{{ form.remotevideofile.id_for_label }}');
+  let input_videofile = document.getElementById('{{ form.videofile.id_for_label }}');
+  let div_remotevideofile = document.getElementById('div_remotevideofile');
+  let div_videofile = document.getElementById('div_videofile');
+
+  if (input_remotevideofile.value) {
+    div_videofile.style.display = 'none';
+    input_videofile.value = '';
+  } else {
+    div_videofile.style.display = 'block';
+  }
+
+  if (input_videofile.value) {
+    div_remotevideofile.style.display = 'none';
+    input_remotevideofile.value = '';
+  } else {
+    div_remotevideofile.style.display = 'block';
+  }
+}
+update_hide_fields();
+</script>
 {% endblock %}

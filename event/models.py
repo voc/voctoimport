@@ -121,9 +121,8 @@ class Event(models.Model):
         props['Fahrplan.Type'] = 'lecture'
         if self.url:
             props['Fahrplan.URL'] = self.url
-        props['Fahrplan.VideoDownloadURL'] = 'https://import.c3voc.de/%s' % self.videofile # TODO: dynamic domain?
 
-        print(props)
+        props['Fahrplan.VideoDownloadURL'] = self.video_url()
 
         c3tt.create_meta_ticket(self.conference.tracker_project_id, self.title, self.talkid, props)['id']
         self.published = True
@@ -139,6 +138,14 @@ class Event(models.Model):
         return path
     videofile = models.FileField(max_length=1000, upload_to=upload_path, blank=True)
     remotevideofile = models.URLField(max_length=200, blank=True)
+
+    def video_url(self):
+        if self.remotevideofile:
+            return self.remotevideofile
+        elif self.videofile:
+            return 'https://import.c3voc.de/%s' % self.videofile # TODO: dynamic domain?
+        else:
+            return None
 
     def __str__(self):
         return "%d: %s" % (self.talkid, self.title)

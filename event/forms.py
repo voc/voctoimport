@@ -10,13 +10,14 @@ class EventForm(forms.ModelForm):
 
     class Meta:
         model = Event
-        fields = ['title', 'abstract', 'description', 'date_date', 'date_time', 'duration', 'language', 'persons', 'room', 'track', 'url', 'videofile']
+        fields = ['title', 'abstract', 'description', 'date_date', 'date_time', 'duration', 'language', 'persons', 'room', 'track', 'url', 'remotevideofile', 'videofile']
 
     def __init__(self, *args, initial={}, **kwargs):
         if 'instance' in kwargs:
             initial["date_date"] = kwargs['instance'].date.astimezone(tz).strftime("%Y-%m-%d")
             initial["date_time"] = kwargs['instance'].date.astimezone(tz).strftime("%H:%M")
             self.new = False
+            self.video_url = kwargs['instance'].video_url()
         else:
             self.new = True
 
