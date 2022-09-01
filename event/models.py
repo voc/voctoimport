@@ -114,7 +114,7 @@ class Event(models.Model):
         props['Fahrplan.Language'] = self.language
         props['Fahrplan.Persons'] = ', '.join([pname.strip().replace(',', '') for pname in self.persons.splitlines()])
         #props['Fahrplan.Recording.Optout'] = "0"
-        props['Fahrplan.Room'] = self.room
+        props['Fahrplan.Room'] = self.room if self.room else "Unknown"
         if self.track:
             props['Fahrplan.Track'] = self.track
         props['Fahrplan.Slug'] = self.slug
