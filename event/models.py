@@ -34,6 +34,9 @@ class Conference(models.Model):
     youtube_token = models.CharField('YouTube Token (Default: Disable YouTube Upload)', blank=True, null=True, max_length=200)
     youtube_playlist = models.CharField('YouTube Playlist ID (Default: No playlist)', blank=True, null=True, max_length=200)
 
+    class Meta:
+        ordering = ("-id", )
+
     def __str__(self):
         return "%s (%s)" % (self.title, self.slug)
 
