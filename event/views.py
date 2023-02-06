@@ -9,6 +9,7 @@ from django.utils.dateparse import parse_datetime
 import datetime
 import json
 import time
+import uuid
 from django.utils import timezone
 tz = timezone.get_default_timezone()
 
@@ -84,9 +85,10 @@ def scheduledict(cslug, request):
     schedule['conference']['acronym'] = conference.slug
     schedule['conference']['title'] = conference.title
     schedule['conference']['time_zone_name'] = 'Europe/Berlin'
-    schedule['days'] = []
-
+    rooms = {}
+    schedule['rooms'] = rooms
     persons = []
+    schedule['days'] = []
     days = {}
     for dbevent in conference.event_set.order_by('date').all():
         if not dbevent.video_url() and request.GET.get("showall") != "yes":
@@ -101,29 +103,33 @@ def scheduledict(cslug, request):
         room = dbevent.room if dbevent.room else 'None'
         if room not in days[date]:
             days[date][room] = []
+        if room not in rooms:
+            rooms[room] = uuid.uuid5(uuid.NAMESPACE_URL, f'https://import.c3voc.de/conference{cslug}/room/{room}')
         event = {}
-        event['url'] = dbevent.url if dbevent.url else ''
-        event['id'] = dbevent.talkid
         event['guid'] = str(dbevent.guid)
+        event['type'] = 'lecture'
+        event['id'] = dbevent.talkid
+        event['slug'] = dbevent.slug
+        event['title'] = dbevent.title
+        event['subtitle'] = ''
         tzoffset = dbevent.date.astimezone(tz).strftime('%z')
         if tzoffset == "":
             tzoffset = "+0000"
         event['date'] = dbevent.date.astimezone(tz).strftime('%%Y-%%m-%%dT%%H:%%M:00%s:%s' % (tzoffset[:3], tzoffset[3:]))
         event['start'] = dbevent.date.astimezone(tz).strftime('%H:%M')
+        event['duration'] = dbevent.duration
         event['room'] = room
         event['track'] = dbevent.track if dbevent.track else ''
-        event['subtitle'] = ''
-        event['logo'] = ''
-        event['duration'] = dbevent.duration
-        event['recording'] = {'optout': False}
-        event['slug'] = dbevent.slug
-        event['title'] = dbevent.title
         event['language'] = dbevent.language
-        event['type'] = 'lecture'
+        event['logo'] = ''
         event['abstract'] = dbevent.abstract
         event['description'] = dbevent.description
+        event['recording'] = {'optout': False}
         event['persons'] = []
-        event['video_download_url'] = dbevent.video_url()
+        event['url'] = dbevent.url if dbevent.url else ''
+        if dbevent.video_url():
+            event['recording']['url'] = dbevent.video_url()
+            event['video_download_url'] = dbevent.video_url()
         for name in dbevent.persons.strip().splitlines():
             name = name.strip()
             if name not in persons:
@@ -136,14 +142,31 @@ def scheduledict(cslug, request):
 # schedule/<cslug>.json
 def view_schedulejson(request, cslug):
     schedule = scheduledict(cslug, request)
-    return HttpResponse(json.dumps(schedule, indent=4))
+    index = 1
+    return HttpResponse(json.dumps({
+        "$schema": "https://c3voc.de/schedule/schema.json",
+        "schedule": {
+            "generator": {"name": "voctoimport", "version": "0.2"},
+            "conference": {
+                **schedule['conference'],
+                "rooms": [
+                    {"name": name, "guid": str(guid)} for name, guid in schedule['rooms'].items()
+                ],
+                "days": [{
+                    "index": i+1,
+                    **day
+                } for i, day in enumerate(schedule['days'])]
+            }
+        }
+    }, indent=2),content_type='application/json' )
 
 def view_schedulexml(request, cslug):
     schedule = scheduledict(cslug, request)
 
     schedulexml = Element('schedule')
+    schedulexml.set("{http://www.w3.org/2001/XMLSchema-instance}noNamespaceSchemaLocation", "https://c3voc.de/schedule/schema.xsd")
 
-    SubElement(schedulexml, 'generator', name='voctoimport', version='0.1')
+    SubElement(schedulexml, 'generator', name='voctoimport', version='0.2')
 
     version = SubElement(schedulexml, 'version')
     version.text=str(int(time.time()))
@@ -156,7 +179,8 @@ def view_schedulexml(request, cslug):
     for i, sday in enumerate(schedule['days']):
         day = SubElement(schedulexml, 'day', date=sday['date'], index=str(i+1))
         for rname, revents in sday['rooms'].items():
-            room = SubElement(day, 'room', name=rname)
+            # TODO: Add room guid
+            room = SubElement(day, 'room', name=rname, guid=str(schedule['rooms'][rname]))
 
             for event in revents:
                 xmlevent = SubElement(room, 'event', guid=str(event['guid']), id=str(event['id']))
