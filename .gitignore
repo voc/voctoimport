@@ -1,1 +1,3 @@
 voctoimport/local_settings.py
+__pycache__
+voctoimport.db
