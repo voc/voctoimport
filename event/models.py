@@ -19,6 +19,46 @@ LANGUAGES = {
     'en-de-es': 'Englisch (+Deutsch, +Spanisch)',
 }
 
+YOUTUBE_CATEGORY = {
+    1:  "1  - Film & Animation",
+    2:  "2  - Autos & Vehicles",
+    10: "10 - Music",
+    15: "15 - Pets & Animals",
+    17: "17 - Sports",
+    18: "18 - Short Movies",
+    19: "19 - Travel & Events",
+    20: "20 - Gaming",
+    21: "21 - Videoblogging",
+    22: "22 - People & Blogs",
+    23: "23 - Comedy",
+    24: "24 - Entertainment",
+    25: "25 - News & Politics",
+    26: "26 - Howto & Style",
+    27: "27 - Education",
+    28: "28 - Science & Technology",
+    30: "30 - Movies",
+    31: "31 - Anime/Animation",
+    32: "32 - Action/Adventure",
+    33: "33 - Classics",
+    34: "34 - Comedy",
+    35: "35 - Documentary",
+    36: "36 - Drama",
+    37: "37 - Family",
+    38: "38 - Foreign",
+    39: "39 - Horror",
+    40: "40 - Sci-Fi/Fantasy",
+    41: "41 - Thriller",
+    42: "42 - Shorts",
+    43: "43 - Shows",
+    44: "44 - Trailers",
+}
+
+YOUTUBE_PRIVACY = {
+    'private': 'Private',
+    'public': 'Public',
+    'unlisted': 'Unlisted',
+}
+
 IMPORT_TOOL_TRACKER_PROJECT_ID = 362
 
 class Conference(models.Model):
@@ -33,6 +73,8 @@ class Conference(models.Model):
 
     youtube_token = models.CharField('YouTube Token (Default: Disable YouTube Upload)', blank=True, null=True, max_length=200)
     youtube_playlist = models.CharField('YouTube Playlist ID (Default: No playlist)', blank=True, null=True, max_length=200)
+    youtube_category = models.IntegerField('YouTube Category ID', blank=True, null=True, choices=YOUTUBE_CATEGORY.items())
+    youtube_privacy = models.CharField('YouTube Privacy', blank=True, null=True, choices=YOUTUBE_PRIVACY.items(), max_length=30)
 
     class Meta:
         ordering = ("-id", )
@@ -104,6 +146,14 @@ class Event(models.Model):
             props['Publishing.YouTube.Tags'] = "%s, %s, %s" % (self.conference.title, self.conference.slug, self.title)
             if self.conference.youtube_playlist:
                 props['Publishing.YouTube.Playlists'] = self.conference.youtube_playlist
+            if self.conference.youtube_category:
+                props['Publishing.YouTube.Category'] = self.conference.youtube_category
+            else:
+                props['Publishing.YouTube.Category'] = 28
+            if self.conference.youtube_privacy:
+                props['Publishing.YouTube.Privacy'] = self.conference.youtube_privacy
+            else:
+                props['Publishing.YouTube.Privacy'] = 'public'
         else:
             props['Publishing.YouTube.Enable'] = 'no'
 
