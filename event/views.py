@@ -48,7 +48,6 @@ def view_event(request, cslug, eguid):
             event.save()
             if 'submit' in request.POST and event.video_url():
                 event.publish()
-            return redirect("/conference/%s" % (conference.slug))
     else:
         form = EventForm(instance=event)
     return render(request, "event/eventform.html", {'conference': conference, 'form': form, 'readonly': event.published})
@@ -67,7 +66,6 @@ def view_new_event(request, cslug):
             event.conference = conference
             event.date = parse_datetime('%sT%s:00' % (form.cleaned_data['date_date'], form.cleaned_data['date_time']))
             event.save()
-            return redirect("/conference/%s" % (conference.slug))
     else:
         lasttalk = Event.objects.filter(conference=conference).order_by('-talkid').first()
         if lasttalk is not None:
