@@ -13,7 +13,7 @@ except:
 
 # SECURITY WARNING: don't run with debug turned on in production!
 RUNNING_DEVSERVER = (len(sys.argv) > 1 and sys.argv[1] == 'runserver')
-DEBUG = True # lol
+DEBUG = RUNNING_DEVSERVER # lol
 
 LOGIN_REDIRECT_URL = '/'
 
