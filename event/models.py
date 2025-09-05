@@ -118,6 +118,7 @@ class Event(models.Model):
 
         # Meta
         props['Meta.Album'] = self.conference.title
+        props['Meta.Acronym'] = self.conference.voctoweb_slug
         props['Meta.Year'] = str(datetime.datetime.now().year)
 
         # Publishing
