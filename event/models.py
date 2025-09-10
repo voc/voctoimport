@@ -118,7 +118,6 @@ class Event(models.Model):
 
         # Meta
         props['Meta.Album'] = self.conference.title
-        props['Meta.Acronym'] = self.conference.voctoweb_slug
         props['Meta.Year'] = str(datetime.datetime.now().year)
 
         # Publishing
@@ -138,8 +137,10 @@ class Event(models.Model):
 
         if self.conference.voctoweb_slug:
             props['Publishing.Voctoweb.Slug'] = self.conference.voctoweb_slug
+            props['Meta.Acronym'] = self.conference.voctoweb_slug
         else:
             props['Publishing.Voctoweb.Slug'] = self.conference.slug
+            props['Meta.Acronym'] = self.conference.slug
 
         if self.conference.youtube_token:
             props['Publishing.YouTube.Enable'] = 'yes'
